@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>淵 & 妍 記帳本</title>
+    <title>Payback Writer</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -12,21 +12,24 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --primary: #2d5a4f;
-            --primary-light: #4a8b7a;
+            --primary: #8AB4F8;
+            --primary-gradient: linear-gradient(135deg, #2E3AE8 0%, #9B5DE5 100%);
             --secondary: #d4956c;
             --accent: #e8b89a;
-            --bg-main: #faf8f5;
-            --bg-card: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --border: #e0ddd8;
-            --shadow: rgba(45, 90, 79, 0.08);
-            --yuan: #5b8e7d;
-            --yen: #c97d5d;
+            --bg-main: #000000;
+            --bg-card: rgba(25, 25, 25, 0.6);
+            --bg-card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --yuan: #81c784;
+            --yen: #ffb74d;
+            --nav-height: 60px;
         }
 
         body {
@@ -35,56 +38,83 @@
             color: var(--text-primary);
             line-height: 1.6;
             padding: 0;
+            padding-bottom: calc(var(--nav-height) + 2rem);
+            /* Space for bottom nav */
             min-height: 100vh;
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: white;
-            padding: 2rem 1.5rem;
-            box-shadow: 0 4px 20px var(--shadow);
+            padding: 1rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .header-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            font-weight: 300;
+        .header-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 1.5rem 1rem;
         }
 
+        /* Bottom Navigation */
         .tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            margin-bottom: 0;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .tab {
-            padding: 0.75rem 1.5rem;
+            flex: 1;
+            padding: 0.5rem;
             background: none;
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             font-family: 'Noto Sans TC', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
         .tab:hover {
@@ -92,17 +122,23 @@
         }
 
         .tab.active {
-            color: var(--primary);
+            color: #ffffff;
+            font-weight: 700;
         }
 
         .tab.active::after {
+            display: none;
+            /* Remove old underline */
+        }
+
+        .tab.active::before {
             content: '';
             position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary);
+            top: 0;
+            width: 40%;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 0 0 4px 4px;
         }
 
         .tab-content {
@@ -128,10 +164,13 @@
 
         .card {
             background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
             border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 2px 12px var(--shadow);
+            padding: 1.5rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
             margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .form-group {
@@ -142,8 +181,10 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--text-primary);
-            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .input-wrapper {
@@ -156,98 +197,110 @@
         input,
         select {
             width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             font-size: 1rem;
             font-family: 'Noto Sans TC', sans-serif;
             transition: all 0.2s ease;
-            background: var(--bg-main);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
         }
 
         input:focus,
         select:focus {
             outline: none;
-            border-color: var(--primary);
-            background: white;
+            border-color: #8AB4F8;
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .amount-input {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 2rem;
+            font-weight: 700;
             text-align: right;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            border-radius: 0;
+            padding: 0.5rem 0;
+        }
+
+        .amount-input:focus {
+            background: transparent;
+            border-bottom-color: #8AB4F8;
         }
 
         .divide-btn {
-            padding: 0.875rem 1.25rem;
-            background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 10px;
+            padding: 0 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             transition: all 0.2s ease;
             white-space: nowrap;
             font-family: 'Noto Sans TC', sans-serif;
         }
 
         .divide-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .divide-btn:active {
-            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
 
         .tag-group {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 0.75rem;
-            flex-wrap: wrap;
         }
 
         .tag {
-            padding: 0.625rem 1.25rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-main);
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 500;
             font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
         }
 
         .tag:hover {
-            border-color: var(--primary);
-            background: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
         }
 
         .tag.selected {
-            background: var(--primary);
+            background: var(--primary-gradient);
             color: white;
-            border-color: var(--primary);
+            border: none;
+            box-shadow: 0 4px 12px rgba(46, 58, 232, 0.4);
         }
 
         .btn-primary {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Noto Sans TC', sans-serif;
-            box-shadow: 0 4px 12px var(--shadow);
+            box-shadow: 0 4px 15px rgba(46, 58, 232, 0.3);
+            margin-top: 1rem;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--shadow);
+            box-shadow: 0 6px 20px rgba(46, 58, 232, 0.5);
+            filter: brightness(1.1);
         }
 
         .btn-primary:active {
@@ -256,39 +309,39 @@
 
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
         .summary-card {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-main) 100%);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border-radius: 16px;
             padding: 1.5rem;
-            border: 2px solid var(--border);
+            border: 1px solid var(--bg-card-border);
         }
 
         .summary-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.75rem;
-            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
 
         .summary-amount {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--primary);
+            color: white;
             margin-bottom: 0.5rem;
         }
 
         .currency-breakdown {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
             margin-top: 1rem;
         }
 
@@ -296,10 +349,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem;
-            background: white;
-            border-radius: 6px;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
             font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .currency-label {
@@ -310,159 +364,108 @@
         .currency-value {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
-            color: var(--text-primary);
+            color: white;
         }
 
         .settlement-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: var(--primary-gradient);
             color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 2rem;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(46, 58, 232, 0.3);
         }
 
         .settlement-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
             margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .settlement-message {
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 1.5rem;
         }
 
         .settlement-amounts {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         .settlement-item {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.75rem;
-            border-radius: 8px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
         }
 
         .month-selector {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .month-btn {
-            padding: 0.625rem 1.25rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        .month-btn:hover {
-            border-color: var(--primary);
-        }
-
-        .month-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
         }
 
         .year-month-select {
             padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-card);
-            font-size: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
             font-weight: 500;
             font-family: 'Noto Sans TC', sans-serif;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .year-month-select:hover {
-            border-color: var(--primary);
-        }
-
-        .year-month-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-        }
-
-        .month-confirm-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .month-confirm-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
+        button {
+            border-radius: 50px !important;
         }
 
+        .month-confirm-btn,
         .current-month-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        .current-month-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
+            border-radius: 50px;
         }
 
         .table-wrapper {
             overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
+            background: transparent;
         }
 
         thead {
-            background: var(--primary);
-            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
         }
 
         th {
             padding: 1rem;
             text-align: left;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
         }
 
         td {
             padding: 1rem;
             border-bottom: 1px solid var(--border);
+            color: white;
         }
 
         tbody tr:hover {
-            background: var(--bg-main);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         tbody tr:last-child td {
@@ -470,82 +473,76 @@
         }
 
         .delete-btn {
-            padding: 0.5rem 1rem;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            font-family: 'Noto Sans TC', sans-serif;
+            padding: 0.4rem 0.8rem;
+            background: rgba(231, 76, 60, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 50px;
+            font-size: 0.8rem;
         }
 
         .delete-btn:hover {
-            background: #c0392b;
-            transform: scale(1.05);
+            background: rgba(231, 76, 60, 0.4);
         }
 
         .payer-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
         .payer-yuan {
-            background: rgba(91, 142, 125, 0.2);
-            color: var(--yuan);
+            background: rgba(129, 199, 132, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(129, 199, 132, 0.3);
         }
 
         .payer-yen {
-            background: rgba(201, 125, 93, 0.2);
-            color: var(--yen);
+            background: rgba(255, 183, 77, 0.2);
+            color: #ffb74d;
+            border: 1px solid rgba(255, 183, 77, 0.3);
+        }
+
+        .btn-purple-outline {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            color: #9B5DE5;
+            border: 1px solid #9B5DE5;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+            margin-top: 1rem;
+        }
+
+        .btn-purple-outline:hover {
+            background: rgba(155, 93, 229, 0.1);
+        }
+
+        .small-btn {
+            padding: 0.5rem 1.5rem !important;
+            margin-top: 0 !important;
+            font-size: 0.9rem !important;
+            width: auto !important;
+            white-space: nowrap;
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 4rem 1rem;
             color: var(--text-secondary);
         }
 
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-state-text {
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .container {
-                padding: 1.5rem 1rem;
-            }
-
-            .card {
-                padding: 1.5rem;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-
-            th,
-            td {
-                padding: 0.75rem 0.5rem;
-            }
+            opacity: 0.3;
+            filter: saturate(0);
         }
     </style>
 
@@ -557,29 +554,30 @@
 
 <body>
     <div class="header">
-        <h1>💰 淵 & 妍 記帳本</h1>
-        <div class="header-subtitle">
-            共同理財，輕鬆分帳
-            <span id="syncIndicator" style="margin-left: 1rem; font-size: 0.85rem;"></span>
+        <h1>Payback Writer</h1>
+        <div class="header-status">
+            <span id="syncIndicator"></span>
         </div>
     </div>
 
     <div class="container">
+
+        <!-- Bottom Navigation -->
         <div class="tabs">
             <button class="tab active" data-tab="add-expense">記帳</button>
-            <button class="tab" data-tab="summary">分帳總額</button>
-            <button class="tab" data-tab="history">月份記錄</button>
-            <button class="tab" data-tab="settings">⚙️ 設定</button>
+            <button class="tab" data-tab="summary">分帳</button>
+            <button class="tab" data-tab="history">月支出</button>
+            <button class="tab" data-tab="settings">設定</button>
         </div>
 
         <!-- 記帳頁面 -->
         <div class="tab-content active" id="add-expense">
             <div class="card">
                 <form id="expenseForm">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 2rem;">
                         <label class="form-label">金額</label>
                         <div class="input-wrapper">
-                            <input type="number" id="amount" step="0.01" min="0" class="amount-input" placeholder="0.00"
+                            <input type="number" id="amount" step="0.01" min="0" class="amount-input" placeholder="0"
                                 required>
                             <button type="button" class="divide-btn" id="divideBtn">÷ 2</button>
                         </div>
@@ -588,7 +586,7 @@
                     <div class="form-group">
                         <label class="form-label">貨幣</label>
                         <select id="currency" required>
-                            <option value="TWD">台幣 (TWD)</option>
+                            <option value="TWD" selected>台幣 (TWD)</option>
                             <option value="JPY">日幣 (JPY)</option>
                             <option value="USD">美金 (USD)</option>
                         </select>
@@ -604,15 +602,15 @@
 
                     <div class="form-group">
                         <label class="form-label">項目</label>
-                        <input type="text" id="item" placeholder="例如：午餐、交通、購物..." required>
+                        <input type="text" id="item" placeholder="早餐、午餐、交通..." required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">支付方式</label>
                         <div class="tag-group">
-                            <div class="tag" data-tag="刷卡">💳 刷卡</div>
-                            <div class="tag" data-tag="現金">💵 現金</div>
-                            <div class="tag" data-tag="轉帳">🏦 轉帳</div>
+                            <div class="tag" data-tag="刷卡">刷卡</div>
+                            <div class="tag" data-tag="現金">現金</div>
+                            <div class="tag" data-tag="轉帳">轉帳</div>
                         </div>
                         <input type="hidden" id="paymentMethod" required>
                     </div>
@@ -631,8 +629,8 @@
 
         <!-- 月份記錄頁面 -->
         <div class="tab-content" id="history">
-            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap;">
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div class="card">
+                <div class="month-selector">
                     <select id="yearSelector" class="year-month-select">
                         <!-- 動態生成 -->
                     </select>
@@ -650,11 +648,10 @@
                         <option value="11">11月</option>
                         <option value="12">12月</option>
                     </select>
-                    <button id="confirmMonthBtn" class="month-confirm-btn">確認</button>
+                    <button id="confirmMonthBtn" class="btn-purple-outline small-btn">確認</button>
+                    <button id="currentMonthBtn" class="btn-purple-outline small-btn">當月</button>
                 </div>
-                <button id="currentMonthBtn" class="current-month-btn">📅 當月</button>
-            </div>
-            <div class="card">
+
                 <div class="table-wrapper">
                     <table id="historyTable">
                         <thead>
@@ -662,10 +659,10 @@
                                 <th>日期</th>
                                 <th>項目</th>
                                 <th>金額</th>
-                                <th>貨幣</th>
-                                <th>支付人</th>
+                                <th>幣別</th>
+                                <th>付款</th>
                                 <th>方式</th>
-                                <th>操作</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="historyBody">
@@ -678,57 +675,41 @@
 
         <!-- 設定頁面 -->
         <div class="tab-content" id="settings">
-            <!-- Firebase 配置區 -->
-            <!-- Firebase 配置區 (已硬編碼) -->
-            <div class="card" style="display: none;">
-                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔧 Firebase 配置</h3>
-                <p>已使用內建配置連結至 yymoney-8c04e</p>
-            </div>
 
-            <!-- 登入狀態區 -->
             <div class="card">
-                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔐 登入狀態</h3>
+                <h3 style="margin-bottom: 1.5rem; color: #8AB4F8;">帳號</h3>
                 <div id="loginSection">
                     <div id="notLoggedIn">
-                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">請使用 Google 帳號登入以同步資料</p>
-                        <button type="button" id="loginBtn" class="btn-primary" style="background: #4285F4;">
-                            <span
-                                style="display: inline-block; margin-right: 8px; background: white; border-radius: 50%; width: 18px; height: 18px; color: #4285F4; font-weight: bold; line-height: 18px;">G</span>
-                            使用 Google 帳號登入
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">登入以同步資料</p>
+                        <button type="button" id="loginBtn" class="btn-purple-outline">
+                            Google 登入
                         </button>
                     </div>
                     <div id="loggedIn" style="display: none;">
-                        <p style="margin-bottom: 1rem;">✅ 已登入：<strong id="currentUserEmail"></strong></p>
-                        <button type="button" id="logoutBtn" class="btn-primary"
-                            style="background: var(--text-secondary);">🚪 登出</button>
+                        <p style="margin-bottom: 1rem; color: white;">已登入：<strong id="currentUserEmail"
+                                style="color: #8AB4F8;"></strong></p>
+                        <button type="button" id="logoutBtn" class="btn-purple-outline">
+                            登出
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 資料同步區 -->
             <div class="card">
-                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">☁️ 資料同步</h3>
+                <h3 style="margin-bottom: 1.5rem; color: #8AB4F8;">同步</h3>
                 <div style="margin-bottom: 1rem;">
-                    <p>同步狀態：<strong id="syncStatusText">🔴 離線</strong></p>
+                    <p style="color: var(--text-secondary);">狀態：<strong id="syncStatusText" style="color: white;">🔴
+                            離線</strong></p>
                 </div>
-                <button type="button" id="uploadDataBtn" class="btn-primary" style="background: var(--secondary);">📤
-                    上傳本地資料到雲端</button>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">首次設定時使用，將現有記帳資料同步到
-                    Firebase</p>
+                <button type="button" id="uploadDataBtn" class="btn-purple-outline">
+                    上傳本地資料
+                </button>
+                <p style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-secondary);">
+                    將裝置資料覆蓋至雲端
+                </p>
             </div>
 
-            <!-- 說明區 -->
-            <div class="card"
-                style="background: var(--accent); background: linear-gradient(135deg, rgba(232, 184, 154, 0.2) 0%, rgba(212, 149, 108, 0.2) 100%);">
-                <h3 style="margin-bottom: 1rem; color: var(--primary);">📖 使用說明</h3>
-                <ul style="margin-left: 1.5rem; line-height: 2;">
-                    <li>Firebase 配置只儲存在本地瀏覽器，不會上傳到 GitHub</li>
-                    <li>請參考 <code>README_FIREBASE.md</code> 完成 Firebase 專案設定</li>
-                    <li>登入後會自動啟用即時同步功能</li>
-                    <li>多裝置間資料會在 1-2 秒內同步</li>
-                    <li>離線時仍可正常記帳，連線後自動同步</li>
-                </ul>
-            </div>
+
         </div>
     </div>
 
@@ -770,15 +751,10 @@
             };
         }
 
-        // (已移除手動配置函式)
-
         // ==================== Firebase 初始化與認證 ====================
 
         // 初始化 Firebase
         async function initFirebase() {
-            // 直接初始化，不再檢查動態配置
-
-
             if (firebaseInitialized) {
                 console.log('Firebase 已初始化');
                 return true;
@@ -824,7 +800,6 @@
                 const result = await firebase.auth().signInWithPopup(provider);
                 currentUser = result.user;
                 console.log('✓ Google 登入成功:', currentUser.email);
-                alert('✓ 歡迎回來，' + currentUser.displayName);
                 return true;
             } catch (error) {
                 console.error('登入失敗:', error);
@@ -839,7 +814,6 @@
                 await firebase.auth().signOut();
                 currentUser = null;
                 console.log('✓ 登出成功');
-                alert('✓ 已登出');
                 setSyncStatus('offline');
             } catch (error) {
                 console.error('登出失敗:', error);
@@ -942,7 +916,10 @@
             };
             const statusDisplay = statusMap[syncStatus] || '';
             if (indicator) indicator.textContent = statusDisplay;
-            if (statusText) statusText.textContent = statusDisplay;
+            if (statusText) {
+                statusText.textContent = statusDisplay;
+                statusText.className = syncStatus;
+            }
         }
 
         // 上傳本地資料到雲端
@@ -1068,7 +1045,7 @@
             document.getElementById('divideBtn').addEventListener('click', () => {
                 const amountInput = document.getElementById('amount');
                 const currentValue = parseFloat(amountInput.value) || 0;
-                amountInput.value = (currentValue / 2).toFixed(2);
+                amountInput.value = (currentValue / 2).toFixed(2); // 保留兩位小數
             });
 
             // 支付方式選擇
@@ -1111,7 +1088,8 @@
                     document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
                     selectedPaymentMethod = '';
 
-                    alert('✓ 記帳成功！');
+                    // 為了方便連續記帳，不該alert阻擋
+                    // alert('✓ 記帳成功！'); 
 
                     // 立即更新所有視圖
                     updateAllViews();
@@ -1122,8 +1100,6 @@
                     alert('✗ 新增失敗，請稍後再試');
                 }
             });
-
-            // (已移除存儲與清除配置的監聽器)
 
             // 登入
             document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -1154,143 +1130,130 @@
 
         // 渲染分帳總額
         function renderSummary() {
-            console.log('渲染分帳總額，記錄數:', expenses.length);
             const summary = calculateSummary();
             const grid = document.getElementById('summaryGrid');
 
             grid.innerHTML = `
                 <!-- 淵付 -->
                 <div class="summary-card">
-                    <div class="summary-title">淵付</div>
+                    <div class="summary-title">淵 先付</div>
                     <div class="currency-breakdown">
                         <div class="currency-item">
-                            <span class="currency-label">台幣</span>
-                            <span class="currency-value">NT$ ${summary.yuan.TWD.toLocaleString()}</span>
+                            <span class="currency-label">TWD</span>
+                            <span class="currency-value">${summary.yuan.TWD.toLocaleString()}</span>
                         </div>
                         <div class="currency-item">
-                            <span class="currency-label">日幣</span>
-                            <span class="currency-value">¥ ${summary.yuan.JPY.toLocaleString()}</span>
+                            <span class="currency-label">JPY</span>
+                            <span class="currency-value">${summary.yuan.JPY.toLocaleString()}</span>
                         </div>
                         <div class="currency-item">
-                            <span class="currency-label">美金</span>
-                            <span class="currency-value">$ ${summary.yuan.USD.toLocaleString()}</span>
+                            <span class="currency-label">USD</span>
+                            <span class="currency-value">${summary.yuan.USD.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 妍付 -->
                 <div class="summary-card">
-                    <div class="summary-title">妍付</div>
+                    <div class="summary-title">妍 先付</div>
                     <div class="currency-breakdown">
                         <div class="currency-item">
-                            <span class="currency-label">台幣</span>
-                            <span class="currency-value">NT$ ${summary.yen.TWD.toLocaleString()}</span>
+                            <span class="currency-label">TWD</span>
+                            <span class="currency-value">${summary.yen.TWD.toLocaleString()}</span>
                         </div>
                         <div class="currency-item">
-                            <span class="currency-label">日幣</span>
-                            <span class="currency-value">¥ ${summary.yen.JPY.toLocaleString()}</span>
+                            <span class="currency-label">JPY</span>
+                            <span class="currency-value">${summary.yen.JPY.toLocaleString()}</span>
                         </div>
                         <div class="currency-item">
-                            <span class="currency-label">美金</span>
-                            <span class="currency-value">$ ${summary.yen.USD.toLocaleString()}</span>
+                            <span class="currency-label">USD</span>
+                            <span class="currency-value">${summary.yen.USD.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 結算 -->
-                <div class="summary-card" style="grid-column: 1 / -1;">
-                    <div class="summary-title">結算</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
-                        <!-- 台幣 -->
-                        <div class="settlement-calc-item">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">台幣 (TWD)</div>
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.TWD >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
-                                ${summary.settlement.TWD >= 0 ? '+' : ''}${summary.settlement.TWD.toLocaleString()} 元
-                            </div>
-                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                ${summary.settlement.TWD > 0 ? '妍 需還 淵' : summary.settlement.TWD < 0 ? '淵 需還 妍' : '已結清'}
-                            </div>
-                        </div>
-
-                        <!-- 日幣 -->
-                        <div class="settlement-calc-item">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">日幣 (JPY)</div>
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.JPY >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
-                                ${summary.settlement.JPY >= 0 ? '+' : ''}${summary.settlement.JPY.toLocaleString()} 円
-                            </div>
-                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                ${summary.settlement.JPY > 0 ? '妍 需還 淵' : summary.settlement.JPY < 0 ? '淵 需還 妍' : '已結清'}
-                            </div>
-                        </div>
-
-                        <!-- 美金 -->
-                        <div class="settlement-calc-item">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">美金 (USD)</div>
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.USD >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
-                                ${summary.settlement.USD >= 0 ? '+' : ''}${summary.settlement.USD.toLocaleString()} 元
-                            </div>
-                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                ${summary.settlement.USD > 0 ? '妍 需還 淵' : summary.settlement.USD < 0 ? '淵 需還 妍' : '已結清'}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 匯率設定與總額計算 -->
                 <div class="settlement-card" style="grid-column: 1 / -1;">
-                    <div class="settlement-title">台幣總額計算</div>
-                    <div style="display: flex; gap: 2rem; align-items: center; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap;">
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            <label style="font-weight: 500;">日幣匯率：</label>
-                            <input type="number" id="jpyRateTotal" step="0.01" value="0.23" style="width: 100px; padding: 0.5rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 1rem; font-weight: 600;">
+                    <div class="settlement-title">結算建議</div>
+                    
+                     <!-- 顯示詳細欠款明細 -->
+                     <div class="settlement-amounts">
+                        <div class="settlement-item">
+                            <span style="font-size: 0.9rem; color: var(--text-secondary); margin-right: 0.5rem;">台幣差額:</span>
+                            <span style="color: ${summary.settlement.TWD >= 0 ? 'var(--yuan)' : 'var(--yen)'}">
+                                ${summary.settlement.TWD > 0 ? '妍欠淵' : summary.settlement.TWD < 0 ? '淵欠妍' : ''} 
+                                ${Math.abs(Math.round(summary.settlement.TWD)).toLocaleString()}
+                            </span>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            <label style="font-weight: 500;">美金匯率：</label>
-                            <input type="number" id="usdRateTotal" step="0.01" value="31" style="width: 100px; padding: 0.5rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 1rem; font-weight: 600;">
+                        <div class="settlement-item">
+                            <span style="font-size: 0.9rem; color: var(--text-secondary); margin-right: 0.5rem;">日幣差額:</span>
+                            <span style="color: ${summary.settlement.JPY >= 0 ? 'var(--yuan)' : 'var(--yen)'}">
+                                ${summary.settlement.JPY > 0 ? '妍欠淵' : summary.settlement.JPY < 0 ? '淵欠妍' : ''} 
+                                ${Math.abs(Math.round(summary.settlement.JPY)).toLocaleString()}
+                            </span>
                         </div>
-                        <button onclick="calculateTotalInTWD()" style="padding: 0.75rem 2rem; background: white; color: var(--primary); border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; transition: all 0.2s ease;">
-                            💰 計算總額
+                         <div class="settlement-item">
+                            <span style="font-size: 0.9rem; color: var(--text-secondary); margin-right: 0.5rem;">美金差額:</span>
+                            <span style="color: ${summary.settlement.USD >= 0 ? 'var(--yuan)' : 'var(--yen)'}">
+                                ${summary.settlement.USD > 0 ? '妍欠淵' : summary.settlement.USD < 0 ? '淵欠妍' : ''} 
+                                ${Math.abs(summary.settlement.USD).toFixed(2)}
+                            </span>
+                        </div>
+                     </div>
+                    
+                    <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1rem;">
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <div style="display: flex; flex-direction: column; align-items: start;">
+                                <label style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem;">日幣匯率</label>
+                                <input type="number" id="jpyRateTotal" value="0.23" step="0.001" style="width: 80px; padding: 0.5rem; font-size: 0.9rem;">
+                            </div>
+                             <div style="display: flex; flex-direction: column; align-items: start;">
+                                <label style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem;">美金匯率</label>
+                                <input type="number" id="usdRateTotal" value="32" step="0.1" style="width: 80px; padding: 0.5rem; font-size: 0.9rem;">
+                            </div>
+                        </div>
+                    
+                        <button onclick="calculateTotalInTWD()" class="btn-purple-outline small-btn">
+                            計算台幣總額
                         </button>
-                    </div>
-                    <div id="totalResult" style="text-align: center; margin-top: 1rem; min-height: 60px;">
-                        <div style="font-size: 0.9rem; opacity: 0.8;">設定匯率後點擊「計算總額」</div>
+                        <div id="totalResult" style="margin-top: 1.5rem;"></div>
                     </div>
                 </div>
             `;
         }
 
-        // 計算台幣總額
+        // 計算台幣總額 (使用手動輸入匯率)
         function calculateTotalInTWD() {
             const summary = calculateSummary();
-            const jpyRate = parseFloat(document.getElementById('jpyRateTotal').value) || 0.23;
-            const usdRate = parseFloat(document.getElementById('usdRateTotal').value) || 31;
 
-            // 將所有幣種換算成台幣
-            const twdFromTWD = summary.settlement.TWD;
-            const twdFromJPY = summary.settlement.JPY * jpyRate;
-            const twdFromUSD = summary.settlement.USD * usdRate;
+            const jpyRateInput = document.getElementById('jpyRateTotal');
+            const usdRateInput = document.getElementById('usdRateTotal');
 
-            const totalTWD = twdFromTWD + twdFromJPY + twdFromUSD;
+            const jpyRate = jpyRateInput ? parseFloat(jpyRateInput.value) || 0.23 : 0.23;
+            const usdRate = usdRateInput ? parseFloat(usdRateInput.value) || 32 : 32;
+
+            const twdTotal = summary.settlement.TWD + (summary.settlement.JPY * jpyRate) + (summary.settlement.USD * usdRate);
 
             const resultDiv = document.getElementById('totalResult');
 
-            if (Math.abs(totalTWD) < 1) {
-                resultDiv.innerHTML = `
-                    <div style="font-size: 2rem; font-weight: 700; color: white;">✓ 已結清</div>
-                `;
+            if (Math.abs(twdTotal) < 1) {
+                resultDiv.innerHTML = '<div style="font-size: 1.5rem; font-weight: 700; color: #81c784;">已結清 ✓</div>';
             } else {
-                const owedPerson = totalTWD > 0 ? '妍 需還 淵' : '淵 需還 妍';
+                const person = twdTotal > 0 ? '妍 需還 淵' : '淵 需還 妍';
+                const color = twdTotal > 0 ? 'var(--yuan)' : 'var(--yen)';
                 resultDiv.innerHTML = `
-                    <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">${owedPerson}</div>
-                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: white;">
-                        NT$ ${Math.abs(totalTWD).toLocaleString()}
+                    <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.5rem; color: var(--text-secondary);">總結算 (台幣)</div>
+                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.2rem;">${person}</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: ${color};">
+                        NT$ ${Math.abs(Math.round(twdTotal)).toLocaleString()}
                     </div>
-                    <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">
-                        (台幣 ${twdFromTWD.toLocaleString()} + 日幣換算 ${twdFromJPY.toLocaleString()} + 美金換算 ${twdFromUSD.toLocaleString()})
+                    <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.5rem;">
+                        (匯率: 日幣 ${jpyRate}, 美金 ${usdRate})
                     </div>
-                `;
+                 `;
             }
         }
+
 
         // 計算分帳
         function calculateSummary() {
@@ -1310,16 +1273,25 @@
 
             // 計算結算金額（直接計算差額）
             // 正數表示妍需要還淵，負數表示淵需要還妍
+            // 這裡簡單計算： (淵付 - 妍付) / 2 = 需還金額 ?? 
+            // 不對，分帳邏輯是：
+            // 總支出 = 淵付 + 妍付
+            // 每人應付 = 總支出 / 2
+            // 淵應付 = 總支出 / 2, 淵實付 = 淵付 => 淵多付 = 淵付 - (淵付+妍付)/2 = (淵付 - 妍付) / 2
+            // 所以 差額 = (淵付 - 妍付) / 2
+
             summary.settlement.TWD = summary.yuan.TWD - summary.yen.TWD;
             summary.settlement.JPY = summary.yuan.JPY - summary.yen.JPY;
             summary.settlement.USD = summary.yuan.USD - summary.yen.USD;
 
             // 判斷誰欠誰（以台幣為主要判斷）
+            // 這裡只是粗略判斷 message，實際金額看上面
             const totalOwed = summary.settlement.TWD + summary.settlement.JPY * 0.23 + summary.settlement.USD * 31;
 
             if (Math.abs(totalOwed) < 1) {
                 summary.settlement.message = '已結清 ✓';
             } else if (totalOwed > 0) {
+                // 淵多付，所以妍要還淵
                 summary.settlement.message = '妍 需還 淵';
             } else {
                 summary.settlement.message = '淵 需還 妍';
@@ -1330,8 +1302,6 @@
 
         // 渲染歷史記錄
         function renderHistory() {
-            console.log('渲染歷史記錄，記錄數:', expenses.length);
-
             const now = new Date();
             const currentYear = now.getFullYear();
             const currentMonthNum = now.getMonth() + 1;
@@ -1369,8 +1339,6 @@
                 renderHistory();
             };
 
-            console.log('當前選擇月份:', currentMonth);
-
             // 過濾當前月份的記錄
             const filteredExpenses = expenses.filter(e => {
                 const date = new Date(e.date);
@@ -1386,7 +1354,7 @@
                         <td colspan="7">
                             <div class="empty-state">
                                 <div class="empty-state-icon">📭</div>
-                                <div class="empty-state-text">本月尚無記帳記錄</div>
+                                <div class="empty-state-text">尚無記錄</div>
                             </div>
                         </td>
                     </tr>
@@ -1419,28 +1387,14 @@
                 expenses = expenses.filter(e => e.id !== id);
 
                 // 儲存到本地
-                try {
-                    await window.storage.set('expenses-data', JSON.stringify(expenses));
-                } catch (error) {
-                    console.error('本地刪除失敗:', error);
-                }
+                await saveExpenses();
 
-                // 從 Firebase 刪除
-                if (firebaseInitialized && currentUser) {
-                    try {
-                        const key = `expense_${id}`;
-                        await firebase.database().ref(`expenses/${key}`).remove();
-                        console.log('✓ 已從雲端刪除');
-                    } catch (error) {
-                        console.error('雲端刪除失敗:', error);
-                    }
-                }
-
+                // 更新視圖
                 updateAllViews();
             }
         }
 
-        // 初始化應用
+        // 啟動應用
         init();
     </script>
 </body>
