@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,8 +115,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card {
@@ -145,7 +153,8 @@
             align-items: stretch;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 0.875rem 1rem;
             border: 2px solid var(--border);
@@ -156,7 +165,8 @@
             background: var(--bg-main);
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: var(--primary);
             background: white;
@@ -532,7 +542,8 @@
                 font-size: 0.9rem;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 0.75rem 0.5rem;
             }
         }
@@ -543,6 +554,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
+
 <body>
     <div class="header">
         <h1>💰 淵 & 妍 記帳本</h1>
@@ -567,7 +579,8 @@
                     <div class="form-group">
                         <label class="form-label">金額</label>
                         <div class="input-wrapper">
-                            <input type="number" id="amount" step="0.01" min="0" class="amount-input" placeholder="0.00" required>
+                            <input type="number" id="amount" step="0.01" min="0" class="amount-input" placeholder="0.00"
+                                required>
                             <button type="button" class="divide-btn" id="divideBtn">÷ 2</button>
                         </div>
                     </div>
@@ -666,40 +679,10 @@
         <!-- 設定頁面 -->
         <div class="tab-content" id="settings">
             <!-- Firebase 配置區 -->
-            <div class="card">
+            <!-- Firebase 配置區 (已硬編碼) -->
+            <div class="card" style="display: none;">
                 <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔧 Firebase 配置</h3>
-                <div id="firebaseConfigForm">
-                    <div class="form-group">
-                        <label class="form-label">API Key</label>
-                        <input type="text" id="apiKey" placeholder="AIza...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Auth Domain</label>
-                        <input type="text" id="authDomain" placeholder="your-project.firebaseapp.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Database URL</label>
-                        <input type="text" id="databaseURL" placeholder="https://your-project.firebaseio.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Project ID</label>
-                        <input type="text" id="projectId" placeholder="your-project-id">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Storage Bucket</label>
-                        <input type="text" id="storageBucket" placeholder="your-project.appspot.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Messaging Sender ID</label>
-                        <input type="text" id="messagingSenderId" placeholder="123456789">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">App ID</label>
-                        <input type="text" id="appId" placeholder="1:123456789:web:abc123">
-                    </div>
-                    <button type="button" id="saveConfigBtn" class="btn-primary">💾 儲存配置</button>
-                    <button type="button" id="clearConfigBtn" class="btn-primary" style="background: var(--text-secondary); margin-left: 0.5rem;">🗑️ 清除配置</button>
-                </div>
+                <p>已使用內建配置連結至 yymoney-8c04e</p>
             </div>
 
             <!-- 登入狀態區 -->
@@ -707,19 +690,17 @@
                 <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔐 登入狀態</h3>
                 <div id="loginSection">
                     <div id="notLoggedIn">
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="loginEmail" placeholder="your-email@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">密碼</label>
-                            <input type="password" id="loginPassword" placeholder="至少6個字元">
-                        </div>
-                        <button type="button" id="loginBtn" class="btn-primary">🔑 登入</button>
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">請使用 Google 帳號登入以同步資料</p>
+                        <button type="button" id="loginBtn" class="btn-primary" style="background: #4285F4;">
+                            <span
+                                style="display: inline-block; margin-right: 8px; background: white; border-radius: 50%; width: 18px; height: 18px; color: #4285F4; font-weight: bold; line-height: 18px;">G</span>
+                            使用 Google 帳號登入
+                        </button>
                     </div>
                     <div id="loggedIn" style="display: none;">
                         <p style="margin-bottom: 1rem;">✅ 已登入：<strong id="currentUserEmail"></strong></p>
-                        <button type="button" id="logoutBtn" class="btn-primary" style="background: var(--text-secondary);">🚪 登出</button>
+                        <button type="button" id="logoutBtn" class="btn-primary"
+                            style="background: var(--text-secondary);">🚪 登出</button>
                     </div>
                 </div>
             </div>
@@ -730,12 +711,15 @@
                 <div style="margin-bottom: 1rem;">
                     <p>同步狀態：<strong id="syncStatusText">🔴 離線</strong></p>
                 </div>
-                <button type="button" id="uploadDataBtn" class="btn-primary" style="background: var(--secondary);">📤 上傳本地資料到雲端</button>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">首次設定時使用，將現有記帳資料同步到 Firebase</p>
+                <button type="button" id="uploadDataBtn" class="btn-primary" style="background: var(--secondary);">📤
+                    上傳本地資料到雲端</button>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">首次設定時使用，將現有記帳資料同步到
+                    Firebase</p>
             </div>
 
             <!-- 說明區 -->
-            <div class="card" style="background: var(--accent); background: linear-gradient(135deg, rgba(232, 184, 154, 0.2) 0%, rgba(212, 149, 108, 0.2) 100%);">
+            <div class="card"
+                style="background: var(--accent); background: linear-gradient(135deg, rgba(232, 184, 154, 0.2) 0%, rgba(212, 149, 108, 0.2) 100%);">
                 <h3 style="margin-bottom: 1rem; color: var(--primary);">📖 使用說明</h3>
                 <ul style="margin-left: 1.5rem; line-height: 2;">
                     <li>Firebase 配置只儲存在本地瀏覽器，不會上傳到 GitHub</li>
@@ -758,91 +742,42 @@
         let firebaseApp = null;
         let firebaseInitialized = false;
         let currentUser = null;
-        let firebaseConfig = null;
+
+        // Firebase 配置 (已硬編碼)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmdbQnS5lfo2GJtm2tfewVbz_lHydztSw",
+            authDomain: "yymoney-8c04e.firebaseapp.com",
+            databaseURL: "https://yymoney-8c04e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yymoney-8c04e",
+            storageBucket: "yymoney-8c04e.firebasestorage.app",
+            messagingSenderId: "639004027453",
+            appId: "1:639004027453:web:1c17df51f3ba982d881854",
+            measurementId: "G-VN303610EN"
+        };
         let syncStatus = 'offline'; // 'offline', 'syncing', 'synced', 'error'
         let isSyncing = false; // 防止重複同步
 
-        // ==================== Firebase 配置管理 ====================
-
-        // 載入 Firebase 配置
-        async function loadFirebaseConfig() {
-            try {
-                const result = await window.storage.get('firebase-config');
-                if (result && result.value) {
-                    firebaseConfig = JSON.parse(result.value);
-                    console.log('Firebase 配置載入成功');
-                    // 自動填入表單
-                    if (document.getElementById('apiKey')) {
-                        document.getElementById('apiKey').value = firebaseConfig.apiKey || '';
-                        document.getElementById('authDomain').value = firebaseConfig.authDomain || '';
-                        document.getElementById('databaseURL').value = firebaseConfig.databaseURL || '';
-                        document.getElementById('projectId').value = firebaseConfig.projectId || '';
-                        document.getElementById('storageBucket').value = firebaseConfig.storageBucket || '';
-                        document.getElementById('messagingSenderId').value = firebaseConfig.messagingSenderId || '';
-                        document.getElementById('appId').value = firebaseConfig.appId || '';
-                    }
-                    return true;
+        // 瀏覽器兼容性：如果 window.storage 不存在（非 Electron 環境），使用 localStorage
+        if (!window.storage) {
+            window.storage = {
+                get: async (key) => {
+                    const value = localStorage.getItem(key);
+                    return { value: value };
+                },
+                set: async (key, value) => {
+                    localStorage.setItem(key, value);
                 }
-            } catch (error) {
-                console.log('尚未配置 Firebase');
-            }
-            return false;
+            };
         }
 
-        // 儲存 Firebase 配置
-        async function saveFirebaseConfig(config) {
-            try {
-                await window.storage.set('firebase-config', JSON.stringify(config));
-                firebaseConfig = config;
-                console.log('Firebase 配置儲存成功');
-                return true;
-            } catch (error) {
-                console.error('Firebase 配置儲存失敗:', error);
-                alert('配置儲存失敗，請稍後再試');
-                return false;
-            }
-        }
-
-        // 驗證 Firebase 配置
-        function validateFirebaseConfig(config) {
-            const required = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-            for (const field of required) {
-                if (!config[field] || config[field].trim() === '') {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // 清除 Firebase 配置
-        async function clearFirebaseConfig() {
-            try {
-                await window.storage.set('firebase-config', '');
-                firebaseConfig = null;
-                firebaseInitialized = false;
-                console.log('Firebase 配置已清除');
-                // 清空表單
-                document.getElementById('apiKey').value = '';
-                document.getElementById('authDomain').value = '';
-                document.getElementById('databaseURL').value = '';
-                document.getElementById('projectId').value = '';
-                document.getElementById('storageBucket').value = '';
-                document.getElementById('messagingSenderId').value = '';
-                document.getElementById('appId').value = '';
-                alert('✓ Firebase 配置已清除');
-            } catch (error) {
-                console.error('清除配置失敗:', error);
-            }
-        }
+        // (已移除手動配置函式)
 
         // ==================== Firebase 初始化與認證 ====================
 
         // 初始化 Firebase
         async function initFirebase() {
-            if (!firebaseConfig) {
-                console.log('Firebase 配置未載入，跳過初始化');
-                return false;
-            }
+            // 直接初始化，不再檢查動態配置
+
 
             if (firebaseInitialized) {
                 console.log('Firebase 已初始化');
@@ -878,39 +813,22 @@
             }
         }
 
-        // 登入
-        async function login(email, password) {
+        // Google 登入
+        async function loginWithGoogle() {
             if (!firebaseInitialized) {
-                alert('請先配置 Firebase');
-                return false;
+                await initFirebase();
             }
 
             try {
-                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                currentUser = userCredential.user;
-                console.log('✓ 登入成功:', currentUser.email);
-                alert('✓ 登入成功！');
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await firebase.auth().signInWithPopup(provider);
+                currentUser = result.user;
+                console.log('✓ Google 登入成功:', currentUser.email);
+                alert('✓ 歡迎回來，' + currentUser.displayName);
                 return true;
             } catch (error) {
                 console.error('登入失敗:', error);
-                let errorMessage = '登入失敗：';
-                switch (error.code) {
-                    case 'auth/invalid-email':
-                        errorMessage += 'Email 格式錯誤';
-                        break;
-                    case 'auth/user-disabled':
-                        errorMessage += '使用者已被停用';
-                        break;
-                    case 'auth/user-not-found':
-                        errorMessage += '使用者不存在';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage += '密碼錯誤';
-                        break;
-                    default:
-                        errorMessage += error.message;
-                }
-                alert(errorMessage);
+                alert('登入失敗：' + error.message);
                 return false;
             }
         }
@@ -1061,15 +979,10 @@
 
         // 初始化
         async function init() {
-            // 載入 Firebase 配置
-            await loadFirebaseConfig();
+            // 立即初始化 Firebase (使用硬編碼配置)
+            await initFirebase();
 
-            // 嘗試初始化 Firebase
-            if (firebaseConfig) {
-                await initFirebase();
-            }
-
-            // 載入本地資料（快速顯示）
+            // 載入本地資料（做為備用或離線顯示）
             await loadExpenses();
             setupEventListeners();
             updateAllViews();
@@ -1210,57 +1123,11 @@
                 }
             });
 
-            // ==================== 設定頁面事件監聽器 ====================
-
-            // 儲存 Firebase 配置
-            document.getElementById('saveConfigBtn').addEventListener('click', async () => {
-                const config = {
-                    apiKey: document.getElementById('apiKey').value.trim(),
-                    authDomain: document.getElementById('authDomain').value.trim(),
-                    databaseURL: document.getElementById('databaseURL').value.trim(),
-                    projectId: document.getElementById('projectId').value.trim(),
-                    storageBucket: document.getElementById('storageBucket').value.trim(),
-                    messagingSenderId: document.getElementById('messagingSenderId').value.trim(),
-                    appId: document.getElementById('appId').value.trim()
-                };
-
-                if (!validateFirebaseConfig(config)) {
-                    alert('請填寫所有 Firebase 配置欄位');
-                    return;
-                }
-
-                const saved = await saveFirebaseConfig(config);
-                if (saved) {
-                    alert('✓ Firebase 配置已儲存');
-                    // 嘗試初始化 Firebase
-                    await initFirebase();
-                }
-            });
-
-            // 清除 Firebase 配置
-            document.getElementById('clearConfigBtn').addEventListener('click', async () => {
-                if (confirm('確定要清除 Firebase 配置嗎？這將會登出並停用雲端同步。')) {
-                    if (currentUser) {
-                        await logout();
-                    }
-                    await clearFirebaseConfig();
-                }
-            });
+            // (已移除存儲與清除配置的監聽器)
 
             // 登入
             document.getElementById('loginBtn').addEventListener('click', async () => {
-                const email = document.getElementById('loginEmail').value.trim();
-                const password = document.getElementById('loginPassword').value;
-
-                if (!email || !password) {
-                    alert('請輸入 Email 和密碼');
-                    return;
-                }
-
-                await login(email, password);
-
-                // 清空密碼欄位
-                document.getElementById('loginPassword').value = '';
+                await loginWithGoogle();
             });
 
             // 登出
@@ -1577,4 +1444,5 @@
         init();
     </script>
 </body>
+
 </html>
