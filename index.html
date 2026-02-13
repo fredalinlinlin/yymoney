@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淵 & 妍 記帳本</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d5a4f;
+            --primary-light: #4a8b7a;
+            --secondary: #d4956c;
+            --accent: #e8b89a;
+            --bg-main: #faf8f5;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border: #e0ddd8;
+            --shadow: rgba(45, 90, 79, 0.08);
+            --yuan: #5b8e7d;
+            --yen: #c97d5d;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.2s ease;
+            background: var(--bg-main);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .amount-input {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .divide-btn {
+            padding: 0.875rem 1.25rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .divide-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .divide-btn:active {
+            transform: translateY(0);
+        }
+
+        .tag-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.625rem 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .tag:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .tag.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-main) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+        }
+
+        .summary-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .summary-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .currency-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .currency-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .currency-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .currency-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .settlement-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .settlement-title {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .settlement-message {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .settlement-amounts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .settlement-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .month-selector {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .month-btn {
+            padding: 0.625rem 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .month-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .month-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .year-month-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .year-month-select:hover {
+            border-color: var(--primary);
+        }
+
+        .year-month-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .month-confirm-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .month-confirm-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .current-month-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .current-month-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: var(--primary);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-main);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .payer-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .payer-yuan {
+            background: rgba(91, 142, 125, 0.2);
+            color: var(--yuan);
+        }
+
+        .payer-yen {
+            background: rgba(201, 125, 93, 0.2);
+            color: var(--yen);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 淵 & 妍 記帳本</h1>
+        <div class="header-subtitle">共同理財，輕鬆分帳</div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="add-expense">記帳</button>
+            <button class="tab" data-tab="summary">分帳總額</button>
+            <button class="tab" data-tab="history">月份記錄</button>
+        </div>
+
+        <!-- 記帳頁面 -->
+        <div class="tab-content active" id="add-expense">
+            <div class="card">
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label class="form-label">金額</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="amount" step="0.01" min="0" class="amount-input" placeholder="0.00" required>
+                            <button type="button" class="divide-btn" id="divideBtn">÷ 2</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">貨幣</label>
+                        <select id="currency" required>
+                            <option value="TWD">台幣 (TWD)</option>
+                            <option value="JPY">日幣 (JPY)</option>
+                            <option value="USD">美金 (USD)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">支付人</label>
+                        <select id="payer" required>
+                            <option value="淵">淵</option>
+                            <option value="妍">妍</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">項目</label>
+                        <input type="text" id="item" placeholder="例如：午餐、交通、購物..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">支付方式</label>
+                        <div class="tag-group">
+                            <div class="tag" data-tag="刷卡">💳 刷卡</div>
+                            <div class="tag" data-tag="現金">💵 現金</div>
+                            <div class="tag" data-tag="轉帳">🏦 轉帳</div>
+                        </div>
+                        <input type="hidden" id="paymentMethod" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">✓ 新增記帳</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 分帳總額頁面 -->
+        <div class="tab-content" id="summary">
+            <div class="summary-grid" id="summaryGrid">
+                <!-- 動態生成 -->
+            </div>
+        </div>
+
+        <!-- 月份記錄頁面 -->
+        <div class="tab-content" id="history">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap;">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <select id="yearSelector" class="year-month-select">
+                        <!-- 動態生成 -->
+                    </select>
+                    <select id="monthSelector" class="year-month-select">
+                        <option value="01">1月</option>
+                        <option value="02">2月</option>
+                        <option value="03">3月</option>
+                        <option value="04">4月</option>
+                        <option value="05">5月</option>
+                        <option value="06">6月</option>
+                        <option value="07">7月</option>
+                        <option value="08">8月</option>
+                        <option value="09">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                    <button id="confirmMonthBtn" class="month-confirm-btn">確認</button>
+                </div>
+                <button id="currentMonthBtn" class="current-month-btn">📅 當月</button>
+            </div>
+            <div class="card">
+                <div class="table-wrapper">
+                    <table id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>項目</th>
+                                <th>金額</th>
+                                <th>貨幣</th>
+                                <th>支付人</th>
+                                <th>方式</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <!-- 動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全域變數
+        let expenses = [];
+        let selectedPaymentMethod = '';
+        let currentMonth = '';
+
+        // 初始化
+        async function init() {
+            await loadExpenses();
+            setupEventListeners();
+            updateAllViews();
+        }
+
+        // 載入資料
+        async function loadExpenses() {
+            try {
+                const result = await window.storage.get('expenses-data');
+                if (result && result.value) {
+                    expenses = JSON.parse(result.value);
+                    console.log('載入資料成功:', expenses.length, '筆記錄');
+                }
+            } catch (error) {
+                console.log('首次使用，初始化空資料');
+                expenses = [];
+            }
+        }
+
+        // 儲存資料
+        async function saveExpenses() {
+            try {
+                const result = await window.storage.set('expenses-data', JSON.stringify(expenses));
+                console.log('儲存成功:', expenses.length, '筆記錄');
+                return result;
+            } catch (error) {
+                console.error('儲存失敗:', error);
+                alert('儲存失敗，請稍後再試');
+                return null;
+            }
+        }
+
+        // 設定事件監聽
+        function setupEventListeners() {
+            // 分頁切換
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+
+                    if (targetTab === 'summary') {
+                        renderSummary();
+                    } else if (targetTab === 'history') {
+                        renderHistory();
+                    }
+                });
+            });
+
+            // 除以2按鈕
+            document.getElementById('divideBtn').addEventListener('click', () => {
+                const amountInput = document.getElementById('amount');
+                const currentValue = parseFloat(amountInput.value) || 0;
+                amountInput.value = (currentValue / 2).toFixed(2);
+            });
+
+            // 支付方式選擇
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+                    tag.classList.add('selected');
+                    selectedPaymentMethod = tag.dataset.tag;
+                    document.getElementById('paymentMethod').value = selectedPaymentMethod;
+                });
+            });
+
+            // 表單提交
+            document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!selectedPaymentMethod) {
+                    alert('請選擇支付方式');
+                    return;
+                }
+
+                const expense = {
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    amount: parseFloat(document.getElementById('amount').value),
+                    currency: document.getElementById('currency').value,
+                    payer: document.getElementById('payer').value,
+                    item: document.getElementById('item').value,
+                    paymentMethod: selectedPaymentMethod
+                };
+
+                console.log('新增記帳:', expense);
+                expenses.push(expense);
+
+                try {
+                    const saveResult = await saveExpenses();
+
+                    // 重置表單
+                    document.getElementById('expenseForm').reset();
+                    document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+                    selectedPaymentMethod = '';
+
+                    alert('✓ 記帳成功！');
+
+                    // 立即更新所有視圖
+                    updateAllViews();
+                } catch (error) {
+                    console.error('新增失敗:', error);
+                    // 如果儲存失敗，移除剛才新增的項目
+                    expenses.pop();
+                    alert('✗ 新增失敗，請稍後再試');
+                }
+            });
+        }
+
+        // 更新所有視圖
+        function updateAllViews() {
+            console.log('更新視圖，目前記錄數:', expenses.length);
+            renderSummary();
+            renderHistory();
+        }
+
+        // 渲染分帳總額
+        function renderSummary() {
+            console.log('渲染分帳總額，記錄數:', expenses.length);
+            const summary = calculateSummary();
+            const grid = document.getElementById('summaryGrid');
+
+            grid.innerHTML = `
+                <!-- 淵付 -->
+                <div class="summary-card">
+                    <div class="summary-title">淵付</div>
+                    <div class="currency-breakdown">
+                        <div class="currency-item">
+                            <span class="currency-label">台幣</span>
+                            <span class="currency-value">NT$ ${summary.yuan.TWD.toLocaleString()}</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">日幣</span>
+                            <span class="currency-value">¥ ${summary.yuan.JPY.toLocaleString()}</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">美金</span>
+                            <span class="currency-value">$ ${summary.yuan.USD.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 妍付 -->
+                <div class="summary-card">
+                    <div class="summary-title">妍付</div>
+                    <div class="currency-breakdown">
+                        <div class="currency-item">
+                            <span class="currency-label">台幣</span>
+                            <span class="currency-value">NT$ ${summary.yen.TWD.toLocaleString()}</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">日幣</span>
+                            <span class="currency-value">¥ ${summary.yen.JPY.toLocaleString()}</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">美金</span>
+                            <span class="currency-value">$ ${summary.yen.USD.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 結算 -->
+                <div class="summary-card" style="grid-column: 1 / -1;">
+                    <div class="summary-title">結算</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                        <!-- 台幣 -->
+                        <div class="settlement-calc-item">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">台幣 (TWD)</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.TWD >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
+                                ${summary.settlement.TWD >= 0 ? '+' : ''}${summary.settlement.TWD.toLocaleString()} 元
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                ${summary.settlement.TWD > 0 ? '妍 需還 淵' : summary.settlement.TWD < 0 ? '淵 需還 妍' : '已結清'}
+                            </div>
+                        </div>
+
+                        <!-- 日幣 -->
+                        <div class="settlement-calc-item">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">日幣 (JPY)</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.JPY >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
+                                ${summary.settlement.JPY >= 0 ? '+' : ''}${summary.settlement.JPY.toLocaleString()} 円
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                ${summary.settlement.JPY > 0 ? '妍 需還 淵' : summary.settlement.JPY < 0 ? '淵 需還 妍' : '已結清'}
+                            </div>
+                        </div>
+
+                        <!-- 美金 -->
+                        <div class="settlement-calc-item">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">美金 (USD)</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: ${summary.settlement.USD >= 0 ? 'var(--yuan)' : 'var(--yen)'};">
+                                ${summary.settlement.USD >= 0 ? '+' : ''}${summary.settlement.USD.toLocaleString()} 元
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                ${summary.settlement.USD > 0 ? '妍 需還 淵' : summary.settlement.USD < 0 ? '淵 需還 妍' : '已結清'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 匯率設定與總額計算 -->
+                <div class="settlement-card" style="grid-column: 1 / -1;">
+                    <div class="settlement-title">台幣總額計算</div>
+                    <div style="display: flex; gap: 2rem; align-items: center; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label style="font-weight: 500;">日幣匯率：</label>
+                            <input type="number" id="jpyRateTotal" step="0.01" value="0.23" style="width: 100px; padding: 0.5rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 1rem; font-weight: 600;">
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label style="font-weight: 500;">美金匯率：</label>
+                            <input type="number" id="usdRateTotal" step="0.01" value="31" style="width: 100px; padding: 0.5rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; border-radius: 6px; font-size: 1rem; font-weight: 600;">
+                        </div>
+                        <button onclick="calculateTotalInTWD()" style="padding: 0.75rem 2rem; background: white; color: var(--primary); border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; transition: all 0.2s ease;">
+                            💰 計算總額
+                        </button>
+                    </div>
+                    <div id="totalResult" style="text-align: center; margin-top: 1rem; min-height: 60px;">
+                        <div style="font-size: 0.9rem; opacity: 0.8;">設定匯率後點擊「計算總額」</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 計算台幣總額
+        function calculateTotalInTWD() {
+            const summary = calculateSummary();
+            const jpyRate = parseFloat(document.getElementById('jpyRateTotal').value) || 0.23;
+            const usdRate = parseFloat(document.getElementById('usdRateTotal').value) || 31;
+
+            // 將所有幣種換算成台幣
+            const twdFromTWD = summary.settlement.TWD;
+            const twdFromJPY = summary.settlement.JPY * jpyRate;
+            const twdFromUSD = summary.settlement.USD * usdRate;
+
+            const totalTWD = twdFromTWD + twdFromJPY + twdFromUSD;
+
+            const resultDiv = document.getElementById('totalResult');
+
+            if (Math.abs(totalTWD) < 1) {
+                resultDiv.innerHTML = `
+                    <div style="font-size: 2rem; font-weight: 700; color: white;">✓ 已結清</div>
+                `;
+            } else {
+                const owedPerson = totalTWD > 0 ? '妍 需還 淵' : '淵 需還 妍';
+                resultDiv.innerHTML = `
+                    <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">${owedPerson}</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: white;">
+                        NT$ ${Math.abs(totalTWD).toLocaleString()}
+                    </div>
+                    <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">
+                        (台幣 ${twdFromTWD.toLocaleString()} + 日幣換算 ${twdFromJPY.toLocaleString()} + 美金換算 ${twdFromUSD.toLocaleString()})
+                    </div>
+                `;
+            }
+        }
+
+        // 計算分帳
+        function calculateSummary() {
+            const summary = {
+                yuan: { TWD: 0, JPY: 0, USD: 0 },
+                yen: { TWD: 0, JPY: 0, USD: 0 },
+                settlement: { TWD: 0, JPY: 0, USD: 0, message: '' }
+            };
+
+            expenses.forEach(expense => {
+                if (expense.payer === '淵') {
+                    summary.yuan[expense.currency] += expense.amount;
+                } else {
+                    summary.yen[expense.currency] += expense.amount;
+                }
+            });
+
+            // 計算結算金額（直接計算差額）
+            // 正數表示妍需要還淵，負數表示淵需要還妍
+            summary.settlement.TWD = summary.yuan.TWD - summary.yen.TWD;
+            summary.settlement.JPY = summary.yuan.JPY - summary.yen.JPY;
+            summary.settlement.USD = summary.yuan.USD - summary.yen.USD;
+
+            // 判斷誰欠誰（以台幣為主要判斷）
+            const totalOwed = summary.settlement.TWD + summary.settlement.JPY * 0.23 + summary.settlement.USD * 31;
+
+            if (Math.abs(totalOwed) < 1) {
+                summary.settlement.message = '已結清 ✓';
+            } else if (totalOwed > 0) {
+                summary.settlement.message = '妍 需還 淵';
+            } else {
+                summary.settlement.message = '淵 需還 妍';
+            }
+
+            return summary;
+        }
+
+        // 渲染歷史記錄
+        function renderHistory() {
+            console.log('渲染歷史記錄，記錄數:', expenses.length);
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonthNum = now.getMonth() + 1;
+            const currentYearMonth = `${currentYear}-${String(currentMonthNum).padStart(2, '0')}`;
+
+            // 如果沒有設定當前月份，預設為當月
+            if (!currentMonth) {
+                currentMonth = currentYearMonth;
+            }
+
+            // 生成年份選擇器（2025-2030）
+            const yearSelector = document.getElementById('yearSelector');
+            let yearOptions = '';
+            for (let year = 2025; year <= 2030; year++) {
+                yearOptions += `<option value="${year}">${year}年</option>`;
+            }
+            yearSelector.innerHTML = yearOptions;
+
+            // 設定當前選擇的年月
+            const [selectedYear, selectedMonth] = currentMonth.split('-');
+            yearSelector.value = selectedYear;
+            document.getElementById('monthSelector').value = selectedMonth;
+
+            // 確認按鈕事件
+            document.getElementById('confirmMonthBtn').onclick = () => {
+                const year = document.getElementById('yearSelector').value;
+                const month = document.getElementById('monthSelector').value;
+                currentMonth = `${year}-${month}`;
+                renderHistory();
+            };
+
+            // 當月按鈕事件
+            document.getElementById('currentMonthBtn').onclick = () => {
+                currentMonth = currentYearMonth;
+                renderHistory();
+            };
+
+            console.log('當前選擇月份:', currentMonth);
+
+            // 過濾當前月份的記錄
+            const filteredExpenses = expenses.filter(e => {
+                const date = new Date(e.date);
+                const expenseMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                return expenseMonth === currentMonth;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // 渲染表格
+            const tbody = document.getElementById('historyBody');
+            if (filteredExpenses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📭</div>
+                                <div class="empty-state-text">本月尚無記帳記錄</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = filteredExpenses.map(expense => {
+                    const date = new Date(expense.date);
+                    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`;
+                    const currencySymbol = expense.currency === 'TWD' ? 'NT$' : expense.currency === 'JPY' ? '¥' : '$';
+
+                    return `
+                        <tr>
+                            <td>${formattedDate}</td>
+                            <td>${expense.item}</td>
+                            <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${currencySymbol} ${expense.amount.toLocaleString()}</td>
+                            <td>${expense.currency}</td>
+                            <td><span class="payer-badge payer-${expense.payer === '淵' ? 'yuan' : 'yen'}">${expense.payer}</span></td>
+                            <td>${expense.paymentMethod}</td>
+                            <td><button class="delete-btn" onclick="deleteExpense(${expense.id})">刪除</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 刪除記帳
+        async function deleteExpense(id) {
+            if (confirm('確定要刪除這筆記帳嗎？')) {
+                expenses = expenses.filter(e => e.id !== id);
+                await saveExpenses();
+                updateAllViews();
+            }
+        }
+
+        // 初始化應用
+        init();
+    </script>
+</body>
+</html>
