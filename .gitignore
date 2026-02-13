@@ -1,0 +1,13 @@
+# Firebase 私有配置
+firebase-config.json
+.env
+.env.local
+
+# 其他敏感資料
+*.key
+*.secret
+.firebase/
+
+# 系統檔案
+.DS_Store
+Thumbs.db

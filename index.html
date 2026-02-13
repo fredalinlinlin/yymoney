@@ -537,11 +537,19 @@
             }
         }
     </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="header">
         <h1>💰 淵 & 妍 記帳本</h1>
-        <div class="header-subtitle">共同理財，輕鬆分帳</div>
+        <div class="header-subtitle">
+            共同理財，輕鬆分帳
+            <span id="syncIndicator" style="margin-left: 1rem; font-size: 0.85rem;"></span>
+        </div>
     </div>
 
     <div class="container">
@@ -549,6 +557,7 @@
             <button class="tab active" data-tab="add-expense">記帳</button>
             <button class="tab" data-tab="summary">分帳總額</button>
             <button class="tab" data-tab="history">月份記錄</button>
+            <button class="tab" data-tab="settings">⚙️ 設定</button>
         </div>
 
         <!-- 記帳頁面 -->
@@ -653,6 +662,90 @@
                 </div>
             </div>
         </div>
+
+        <!-- 設定頁面 -->
+        <div class="tab-content" id="settings">
+            <!-- Firebase 配置區 -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔧 Firebase 配置</h3>
+                <div id="firebaseConfigForm">
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="text" id="apiKey" placeholder="AIza...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Auth Domain</label>
+                        <input type="text" id="authDomain" placeholder="your-project.firebaseapp.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Database URL</label>
+                        <input type="text" id="databaseURL" placeholder="https://your-project.firebaseio.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Project ID</label>
+                        <input type="text" id="projectId" placeholder="your-project-id">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Storage Bucket</label>
+                        <input type="text" id="storageBucket" placeholder="your-project.appspot.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Messaging Sender ID</label>
+                        <input type="text" id="messagingSenderId" placeholder="123456789">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">App ID</label>
+                        <input type="text" id="appId" placeholder="1:123456789:web:abc123">
+                    </div>
+                    <button type="button" id="saveConfigBtn" class="btn-primary">💾 儲存配置</button>
+                    <button type="button" id="clearConfigBtn" class="btn-primary" style="background: var(--text-secondary); margin-left: 0.5rem;">🗑️ 清除配置</button>
+                </div>
+            </div>
+
+            <!-- 登入狀態區 -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">🔐 登入狀態</h3>
+                <div id="loginSection">
+                    <div id="notLoggedIn">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="loginEmail" placeholder="your-email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">密碼</label>
+                            <input type="password" id="loginPassword" placeholder="至少6個字元">
+                        </div>
+                        <button type="button" id="loginBtn" class="btn-primary">🔑 登入</button>
+                    </div>
+                    <div id="loggedIn" style="display: none;">
+                        <p style="margin-bottom: 1rem;">✅ 已登入：<strong id="currentUserEmail"></strong></p>
+                        <button type="button" id="logoutBtn" class="btn-primary" style="background: var(--text-secondary);">🚪 登出</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 資料同步區 -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">☁️ 資料同步</h3>
+                <div style="margin-bottom: 1rem;">
+                    <p>同步狀態：<strong id="syncStatusText">🔴 離線</strong></p>
+                </div>
+                <button type="button" id="uploadDataBtn" class="btn-primary" style="background: var(--secondary);">📤 上傳本地資料到雲端</button>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">首次設定時使用，將現有記帳資料同步到 Firebase</p>
+            </div>
+
+            <!-- 說明區 -->
+            <div class="card" style="background: var(--accent); background: linear-gradient(135deg, rgba(232, 184, 154, 0.2) 0%, rgba(212, 149, 108, 0.2) 100%);">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">📖 使用說明</h3>
+                <ul style="margin-left: 1.5rem; line-height: 2;">
+                    <li>Firebase 配置只儲存在本地瀏覽器，不會上傳到 GitHub</li>
+                    <li>請參考 <code>README_FIREBASE.md</code> 完成 Firebase 專案設定</li>
+                    <li>登入後會自動啟用即時同步功能</li>
+                    <li>多裝置間資料會在 1-2 秒內同步</li>
+                    <li>離線時仍可正常記帳，連線後自動同步</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -661,8 +754,322 @@
         let selectedPaymentMethod = '';
         let currentMonth = '';
 
+        // Firebase 相關全域變數
+        let firebaseApp = null;
+        let firebaseInitialized = false;
+        let currentUser = null;
+        let firebaseConfig = null;
+        let syncStatus = 'offline'; // 'offline', 'syncing', 'synced', 'error'
+        let isSyncing = false; // 防止重複同步
+
+        // ==================== Firebase 配置管理 ====================
+
+        // 載入 Firebase 配置
+        async function loadFirebaseConfig() {
+            try {
+                const result = await window.storage.get('firebase-config');
+                if (result && result.value) {
+                    firebaseConfig = JSON.parse(result.value);
+                    console.log('Firebase 配置載入成功');
+                    // 自動填入表單
+                    if (document.getElementById('apiKey')) {
+                        document.getElementById('apiKey').value = firebaseConfig.apiKey || '';
+                        document.getElementById('authDomain').value = firebaseConfig.authDomain || '';
+                        document.getElementById('databaseURL').value = firebaseConfig.databaseURL || '';
+                        document.getElementById('projectId').value = firebaseConfig.projectId || '';
+                        document.getElementById('storageBucket').value = firebaseConfig.storageBucket || '';
+                        document.getElementById('messagingSenderId').value = firebaseConfig.messagingSenderId || '';
+                        document.getElementById('appId').value = firebaseConfig.appId || '';
+                    }
+                    return true;
+                }
+            } catch (error) {
+                console.log('尚未配置 Firebase');
+            }
+            return false;
+        }
+
+        // 儲存 Firebase 配置
+        async function saveFirebaseConfig(config) {
+            try {
+                await window.storage.set('firebase-config', JSON.stringify(config));
+                firebaseConfig = config;
+                console.log('Firebase 配置儲存成功');
+                return true;
+            } catch (error) {
+                console.error('Firebase 配置儲存失敗:', error);
+                alert('配置儲存失敗，請稍後再試');
+                return false;
+            }
+        }
+
+        // 驗證 Firebase 配置
+        function validateFirebaseConfig(config) {
+            const required = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+            for (const field of required) {
+                if (!config[field] || config[field].trim() === '') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // 清除 Firebase 配置
+        async function clearFirebaseConfig() {
+            try {
+                await window.storage.set('firebase-config', '');
+                firebaseConfig = null;
+                firebaseInitialized = false;
+                console.log('Firebase 配置已清除');
+                // 清空表單
+                document.getElementById('apiKey').value = '';
+                document.getElementById('authDomain').value = '';
+                document.getElementById('databaseURL').value = '';
+                document.getElementById('projectId').value = '';
+                document.getElementById('storageBucket').value = '';
+                document.getElementById('messagingSenderId').value = '';
+                document.getElementById('appId').value = '';
+                alert('✓ Firebase 配置已清除');
+            } catch (error) {
+                console.error('清除配置失敗:', error);
+            }
+        }
+
+        // ==================== Firebase 初始化與認證 ====================
+
+        // 初始化 Firebase
+        async function initFirebase() {
+            if (!firebaseConfig) {
+                console.log('Firebase 配置未載入，跳過初始化');
+                return false;
+            }
+
+            if (firebaseInitialized) {
+                console.log('Firebase 已初始化');
+                return true;
+            }
+
+            try {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                firebaseInitialized = true;
+                console.log('✓ Firebase 初始化成功');
+
+                // 監聽認證狀態變化
+                firebase.auth().onAuthStateChanged(async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        console.log('使用者已登入:', user.email);
+                        updateLoginUI(true);
+                        // 啟動即時同步
+                        await setupFirebaseSync();
+                    } else {
+                        currentUser = null;
+                        console.log('使用者未登入');
+                        updateLoginUI(false);
+                        setSyncStatus('offline');
+                    }
+                });
+
+                return true;
+            } catch (error) {
+                console.error('Firebase 初始化失敗:', error);
+                alert('Firebase 初始化失敗：' + error.message);
+                return false;
+            }
+        }
+
+        // 登入
+        async function login(email, password) {
+            if (!firebaseInitialized) {
+                alert('請先配置 Firebase');
+                return false;
+            }
+
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                console.log('✓ 登入成功:', currentUser.email);
+                alert('✓ 登入成功！');
+                return true;
+            } catch (error) {
+                console.error('登入失敗:', error);
+                let errorMessage = '登入失敗：';
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage += 'Email 格式錯誤';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage += '使用者已被停用';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage += '使用者不存在';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage += '密碼錯誤';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                alert(errorMessage);
+                return false;
+            }
+        }
+
+        // 登出
+        async function logout() {
+            try {
+                await firebase.auth().signOut();
+                currentUser = null;
+                console.log('✓ 登出成功');
+                alert('✓ 已登出');
+                setSyncStatus('offline');
+            } catch (error) {
+                console.error('登出失敗:', error);
+                alert('登出失敗：' + error.message);
+            }
+        }
+
+        // 更新登入 UI
+        function updateLoginUI(isLoggedIn) {
+            const notLoggedIn = document.getElementById('notLoggedIn');
+            const loggedIn = document.getElementById('loggedIn');
+            const currentUserEmail = document.getElementById('currentUserEmail');
+
+            if (isLoggedIn && currentUser) {
+                notLoggedIn.style.display = 'none';
+                loggedIn.style.display = 'block';
+                currentUserEmail.textContent = currentUser.email;
+            } else {
+                notLoggedIn.style.display = 'block';
+                loggedIn.style.display = 'none';
+            }
+        }
+
+        // ==================== Firebase 即時同步 ====================
+
+        // 設定 Firebase 即時同步
+        async function setupFirebaseSync() {
+            if (!firebaseInitialized || !currentUser) {
+                console.log('無法啟動同步：Firebase 未初始化或使用者未登入');
+                return;
+            }
+
+            const dbRef = firebase.database().ref('expenses');
+
+            // 監聽所有資料變更
+            dbRef.on('value', async (snapshot) => {
+                if (isSyncing) {
+                    console.log('正在同步中，跳過此次更新');
+                    return;
+                }
+
+                const cloudData = snapshot.val();
+                if (cloudData && typeof cloudData === 'object') {
+                    // 將物件轉換為陣列
+                    const cloudExpenses = Object.values(cloudData).filter(item => item && item.id);
+
+                    // 按 id 降序排序（最新的在前）
+                    cloudExpenses.sort((a, b) => b.id - a.id);
+
+                    // 更新內存資料
+                    expenses = cloudExpenses;
+
+                    // 同步到本地快取
+                    try {
+                        await window.storage.set('expenses-data', JSON.stringify(expenses));
+                        console.log('✓ 雲端資料已同步到本地:', expenses.length, '筆');
+                    } catch (error) {
+                        console.error('本地快取更新失敗:', error);
+                    }
+
+                    // 更新 UI
+                    updateAllViews();
+
+                    setSyncStatus('synced');
+                } else if (cloudData === null) {
+                    console.log('雲端資料為空');
+                }
+            });
+
+            // 監聽連線狀態
+            firebase.database().ref('.info/connected').on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    console.log('✓ Firebase 已連線');
+                    if (syncStatus !== 'syncing') {
+                        setSyncStatus('synced');
+                    }
+                } else {
+                    console.log('✗ Firebase 已斷線');
+                    setSyncStatus('offline');
+                }
+            });
+
+            console.log('✓ Firebase 即時同步已啟動');
+        }
+
+        // 同步狀態管理
+        function setSyncStatus(status) {
+            syncStatus = status;
+            updateSyncIndicator();
+        }
+
+        function updateSyncIndicator() {
+            const indicator = document.getElementById('syncIndicator');
+            const statusText = document.getElementById('syncStatusText');
+            const statusMap = {
+                'synced': '🟢 已同步',
+                'syncing': '🟡 同步中',
+                'offline': '🔴 離線',
+                'error': '⚠️ 錯誤'
+            };
+            const statusDisplay = statusMap[syncStatus] || '';
+            if (indicator) indicator.textContent = statusDisplay;
+            if (statusText) statusText.textContent = statusDisplay;
+        }
+
+        // 上傳本地資料到雲端
+        async function uploadLocalDataToCloud() {
+            if (!firebaseInitialized || !currentUser) {
+                alert('請先登入 Firebase');
+                return;
+            }
+
+            try {
+                setSyncStatus('syncing');
+                isSyncing = true;
+
+                // 將陣列轉換為物件格式
+                const updates = {};
+                expenses.forEach(expense => {
+                    const key = `expense_${expense.id}`;
+                    updates[`/expenses/${key}`] = expense;
+                });
+
+                await firebase.database().ref().update(updates);
+
+                isSyncing = false;
+                setSyncStatus('synced');
+                alert(`✓ 成功上傳 ${expenses.length} 筆記錄到雲端！`);
+                console.log('✓ 本地資料已上傳到雲端');
+            } catch (error) {
+                isSyncing = false;
+                setSyncStatus('error');
+                console.error('上傳資料失敗:', error);
+                alert('上傳失敗：' + error.message);
+            }
+        }
+
         // 初始化
         async function init() {
+            // 載入 Firebase 配置
+            await loadFirebaseConfig();
+
+            // 嘗試初始化 Firebase
+            if (firebaseConfig) {
+                await initFirebase();
+            }
+
+            // 載入本地資料（快速顯示）
             await loadExpenses();
             setupEventListeners();
             updateAllViews();
@@ -684,15 +1091,43 @@
 
         // 儲存資料
         async function saveExpenses() {
+            // 1. 立即儲存到本地（確保不遺失）
             try {
-                const result = await window.storage.set('expenses-data', JSON.stringify(expenses));
-                console.log('儲存成功:', expenses.length, '筆記錄');
-                return result;
+                await window.storage.set('expenses-data', JSON.stringify(expenses));
+                console.log('本地儲存成功:', expenses.length, '筆記錄');
             } catch (error) {
-                console.error('儲存失敗:', error);
+                console.error('本地儲存失敗:', error);
                 alert('儲存失敗，請稍後再試');
                 return null;
             }
+
+            // 2. 同步到 Firebase（如果已登入）
+            if (firebaseInitialized && currentUser) {
+                try {
+                    setSyncStatus('syncing');
+                    isSyncing = true;
+
+                    // 關鍵：逐筆寫入而非覆蓋整個資料庫
+                    const updates = {};
+                    expenses.forEach(expense => {
+                        const key = `expense_${expense.id}`;
+                        updates[`/expenses/${key}`] = expense;
+                    });
+
+                    await firebase.database().ref().update(updates);
+
+                    isSyncing = false;
+                    setSyncStatus('synced');
+                    console.log('雲端同步成功');
+                } catch (error) {
+                    isSyncing = false;
+                    console.error('雲端同步失敗:', error);
+                    setSyncStatus('error');
+                    // 不影響本地儲存的成功狀態
+                }
+            }
+
+            return true;
         }
 
         // 設定事件監聽
@@ -772,6 +1207,73 @@
                     // 如果儲存失敗，移除剛才新增的項目
                     expenses.pop();
                     alert('✗ 新增失敗，請稍後再試');
+                }
+            });
+
+            // ==================== 設定頁面事件監聽器 ====================
+
+            // 儲存 Firebase 配置
+            document.getElementById('saveConfigBtn').addEventListener('click', async () => {
+                const config = {
+                    apiKey: document.getElementById('apiKey').value.trim(),
+                    authDomain: document.getElementById('authDomain').value.trim(),
+                    databaseURL: document.getElementById('databaseURL').value.trim(),
+                    projectId: document.getElementById('projectId').value.trim(),
+                    storageBucket: document.getElementById('storageBucket').value.trim(),
+                    messagingSenderId: document.getElementById('messagingSenderId').value.trim(),
+                    appId: document.getElementById('appId').value.trim()
+                };
+
+                if (!validateFirebaseConfig(config)) {
+                    alert('請填寫所有 Firebase 配置欄位');
+                    return;
+                }
+
+                const saved = await saveFirebaseConfig(config);
+                if (saved) {
+                    alert('✓ Firebase 配置已儲存');
+                    // 嘗試初始化 Firebase
+                    await initFirebase();
+                }
+            });
+
+            // 清除 Firebase 配置
+            document.getElementById('clearConfigBtn').addEventListener('click', async () => {
+                if (confirm('確定要清除 Firebase 配置嗎？這將會登出並停用雲端同步。')) {
+                    if (currentUser) {
+                        await logout();
+                    }
+                    await clearFirebaseConfig();
+                }
+            });
+
+            // 登入
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+
+                if (!email || !password) {
+                    alert('請輸入 Email 和密碼');
+                    return;
+                }
+
+                await login(email, password);
+
+                // 清空密碼欄位
+                document.getElementById('loginPassword').value = '';
+            });
+
+            // 登出
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                if (confirm('確定要登出嗎？')) {
+                    await logout();
+                }
+            });
+
+            // 上傳本地資料到雲端
+            document.getElementById('uploadDataBtn').addEventListener('click', async () => {
+                if (confirm(`確定要上傳 ${expenses.length} 筆本地記錄到雲端嗎？`)) {
+                    await uploadLocalDataToCloud();
                 }
             });
         }
@@ -1046,8 +1548,27 @@
         // 刪除記帳
         async function deleteExpense(id) {
             if (confirm('確定要刪除這筆記帳嗎？')) {
+                // 從內存中刪除
                 expenses = expenses.filter(e => e.id !== id);
-                await saveExpenses();
+
+                // 儲存到本地
+                try {
+                    await window.storage.set('expenses-data', JSON.stringify(expenses));
+                } catch (error) {
+                    console.error('本地刪除失敗:', error);
+                }
+
+                // 從 Firebase 刪除
+                if (firebaseInitialized && currentUser) {
+                    try {
+                        const key = `expense_${id}`;
+                        await firebase.database().ref(`expenses/${key}`).remove();
+                        console.log('✓ 已從雲端刪除');
+                    } catch (error) {
+                        console.error('雲端刪除失敗:', error);
+                    }
+                }
+
                 updateAllViews();
             }
         }
