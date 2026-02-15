@@ -1380,43 +1380,46 @@
             }
         }
 
-        // 刪除記帳 - 修復版本，確保雲端同步刪除
+        // 刪除記帳 - 確保雲端同步刪除
         async function deleteExpense(id) {
             if (confirm('確定要刪除這筆記帳嗎?')) {
-                // 從內存中刪除
-                expenses = expenses.filter(e => e.id !== id);
+                console.log('開始刪除記帳 ID:', id);
 
-                // 1. 立即儲存到本地
-                try {
-                    await window.storage.set('expenses-data', JSON.stringify(expenses));
-                    console.log('本地刪除成功,剩餘:', expenses.length, '筆記錄');
-                } catch (error) {
-                    console.error('本地刪除失敗:', error);
-                    alert('刪除失敗,請稍後再試');
-                    return;
-                }
+                // 設定同步標記,防止 Firebase 監聽器干擾
+                isSyncing = true;
+                setSyncStatus('syncing');
 
-                // 2. 從 Firebase 雲端刪除(如果已登入)
+                // 1. 先從 Firebase 雲端刪除(如果已登入)
                 if (firebaseInitialized && currentUser) {
                     try {
-                        setSyncStatus('syncing');
-                        isSyncing = true;
-
                         const key = `expense_${id}`;
                         await firebase.database().ref(`expenses/${key}`).remove();
-
-                        isSyncing = false;
-                        setSyncStatus('synced');
                         console.log('✓ 雲端刪除成功:', key);
                     } catch (error) {
-                        isSyncing = false;
                         console.error('雲端刪除失敗:', error);
+                        isSyncing = false;
                         setSyncStatus('error');
-                        alert('雲端同步失敗,但本地已刪除。請檢查網路連線。');
+                        alert('刪除失敗:' + error.message);
+                        return;
                     }
                 }
 
-                // 3. 更新視圖
+                // 2. 從內存中刪除
+                expenses = expenses.filter(e => e.id !== id);
+
+                // 3. 更新到本地儲存
+                try {
+                    await window.storage.set('expenses-data', JSON.stringify(expenses));
+                    console.log('✓ 本地刪除成功,剩餘:', expenses.length, '筆記錄');
+                } catch (error) {
+                    console.error('本地儲存失敗:', error);
+                }
+
+                // 4. 解除同步標記
+                isSyncing = false;
+                setSyncStatus('synced');
+
+                // 5. 更新視圖
                 updateAllViews();
             }
         }
